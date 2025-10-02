@@ -1,0 +1,9 @@
+services:
+  app:
+    container_name: nefedov_fastapi_app
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: fastapi_nefedov
+    ports:
+      - 8000:8000
