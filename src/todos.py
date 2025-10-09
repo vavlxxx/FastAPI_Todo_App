@@ -1,5 +1,4 @@
-from pathlib import Path
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Path
 
 from src.schemas import Todo
 from src.examples import TODO_EXAMPLES
