@@ -1,14 +1,19 @@
 from fastapi import APIRouter, Body, Path
 
-from src.schemas import Todo
-from src.examples import TODO_EXAMPLES
+from src.schemas import Todo, TodoWitoutId
+from src.examples import TODO_EXAMPLES, TODO_UPDATE_EXAMPLES
+from src.exceptions import (
+    NotFoundHTTPError,
+    TodoNotFoundHTTPError,
+    TodoAlreadyExistsHTTPError,
+)
 
 router = APIRouter()
 
 todo_list = []
 
 
-@router.post("/")
+@router.post("/", status_code=201)
 async def add_todo(
     todo: Todo = Body(
         description="The todo to add to the list.",
@@ -17,7 +22,7 @@ async def add_todo(
 ) -> dict:
     for existing_todo in todo_list:
         if existing_todo.id == todo.id:
-            return {"message": "Todo with supplied ID already exists."}
+            raise TodoAlreadyExistsHTTPError
     todo_list.append(todo)
     return {
         "message": "Todo added successfully",
@@ -32,11 +37,41 @@ async def retrieve_todos() -> dict:
     }
 
 
-@router.get("/todo/{todo_id}")
+@router.get("/{todo_id}")
 async def get_single_todo(
     todo_id: int = Path(title="The ID of the todo to retrieve.", min=1),
 ) -> dict:
     for todo in todo_list:
         if todo.id == todo_id:
             return {"todo": todo}
-    return {"message": "Todo with supplied ID doesn't exist."}
+    raise TodoNotFoundHTTPError
+
+
+@router.put("/{todo_id}")
+async def update_todo(
+    todo_data: TodoWitoutId = Body(openapi_examples=TODO_UPDATE_EXAMPLES),
+    todo_id: int = Path(..., title="The ID of the todo to be updated"),
+) -> dict:
+    for todo in todo_list:
+        if todo.id == todo_id:
+            todo.item = todo_data.item
+            return {"message": "Todo updated successfully.", "data": todo}
+    raise TodoNotFoundHTTPError
+
+
+@router.delete("/{todo_id}")
+async def delete_single_todo(todo_id: int) -> dict:
+    for index in range(len(todo_list)):
+        todo = todo_list[index]
+        if todo.id == todo_id:
+            todo_list.pop(index)
+            return {"message": "Todo deleted successfully."}
+    raise TodoNotFoundHTTPError
+
+
+@router.delete("/")
+async def delete_all_todo() -> dict:
+    if not todo_list:
+        raise NotFoundHTTPError(detail="Todos list already empty")
+    todo_list.clear()
+    return {"message": "Todos deleted successfully."}

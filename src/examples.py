@@ -32,3 +32,33 @@ TODO_EXAMPLES: Dict[str, Example] = {
         },
     },
 }
+
+
+TODO_UPDATE_EXAMPLES: Dict[str, Example] = {
+    "SHOPPING": {
+        "summary": "Список покупок",
+        "value": {"item": {"item": "Купить молоко и хлеб", "status": False}},
+    },
+    "WORK": {
+        "summary": "Рабочая задача",
+        "value": {
+            "item": {"item": "Завершить отчет по проекту", "status": False},
+        },
+    },
+    "COMPLETED": {
+        "summary": "Выполненная задача",
+        "value": {
+            "item": {"item": "Отправить письмо клиенту", "status": True},
+        },
+    },
+    "HOME": {
+        "summary": "Домашнее дело",
+        "value": {"item": {"item": "Починить кран на кухне", "status": False}},
+    },
+    "LEARNING": {
+        "summary": "Обучение",
+        "value": {
+            "item": {"item": "Изучить новую функцию FastAPI", "status": True},
+        },
+    },
+}

@@ -13,6 +13,24 @@ class Item(PydanticBase):
     status: bool
 
 
-class Todo(PydanticBase):
+class _TodoBase(PydanticBase):
     id: int = Field(min=1)
+
+
+class TodoWitoutId(PydanticBase):
     item: Item
+
+
+class Todo(_TodoBase):
+    item: Item
+
+
+# class TodosItems(PydanticBase):
+#     todos: list[TodoWitoutId]
+#     model_config = ConfigDict(
+#         json_schema_extra={
+#             "example": {
+#                 "todos": [{"item": "Example todo 1!"}, {"item": "Example todo 2!"}]
+#             }
+#         }
+#     )
