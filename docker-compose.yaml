@@ -7,3 +7,19 @@ services:
     image: fastapi_nefedov
     ports:
       - 8000:8000
+  db:
+    container_name: nefedov_db
+    image: postgres
+    ports:
+      - 6432:5432
+    env_file:
+      - ".env.postgres"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
+
+networks:
+  nefedov_net:
+    driver: bridge
