@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Body, Path
+from fastapi import APIRouter, Body, Depends, Path, Request
+from fastapi.templating import Jinja2Templates
 
 from sqlalchemy import delete, select, insert, update
 
 from src.models import Todo
+from src.config import settings
 from src.dependencies import DB
 from src.schemas import TodoAddRequest, TodoWitoutId, TodoSchema
 from src.examples import TODO_EXAMPLES, TODO_UPDATE_EXAMPLES
@@ -12,16 +14,21 @@ from src.exceptions import (
     TodoAlreadyExistsHTTPError,
 )
 
+templates = Jinja2Templates(directory=settings.BASE_DIR / "templates/")
+
+
 router = APIRouter()
 
 
 @router.post("/", status_code=201)
 async def add_todo(
     db: DB,
-    todo: TodoAddRequest = Body(
-        description="The todo to add to the list.",
-        openapi_examples=TODO_EXAMPLES,
-    ),
+    request: Request,
+    # todo: TodoAddRequest = Body(
+    #     description="The todo to add to the list.",
+    #     openapi_examples=TODO_EXAMPLES,
+    # ),
+    todo: TodoAddRequest = Depends(TodoAddRequest.as_form),
 ) -> dict:
     query = select(Todo).filter(Todo.item == todo.item)
     result = await db.execute(query)
@@ -32,28 +39,38 @@ async def add_todo(
     insert_stmt = insert(Todo).values(item=todo.item, status=todo.status)
     await db.execute(insert_stmt)
     await db.commit()
-    return {
-        "message": "Todo added successfully",
-        "data": todo,
-    }
+
+    query = select(Todo)
+    result = await db.execute(query)
+    todo_list = result.scalars().all()
+    todo_list = [TodoSchema.model_validate(todo) for todo in todo_list]
+
+    return templates.TemplateResponse(
+        "todo.html", {"request": request, "todos": todo_list}
+    )
+
+    # return {
+    #     "message": "Todo added successfully",
+    #     "data": todo,
+    # }
 
 
 @router.get("/")
-async def retrieve_todos(db: DB) -> dict:
+async def retrieve_todos(db: DB, request: Request) -> dict:
     query = select(Todo)
     result = await db.execute(query)
     todos = result.scalars().all()
 
     todos_list = [TodoSchema.model_validate(todo) for todo in todos]
-    return {
-        "message": "Todos retrieved successfully.",
-        "todos": todos_list,
-    }
+    return templates.TemplateResponse(
+        "todo.html", {"request": request, "todos": todos_list}
+    )
 
 
 @router.get("/{todo_id}")
 async def get_single_todo(
     db: DB,
+    request: Request,
     todo_id: int = Path(title="The ID of the todo to retrieve.", min=1),
 ) -> dict:
     query = select(Todo).filter_by(id=todo_id)
@@ -61,15 +78,24 @@ async def get_single_todo(
     todo = result.scalar_one_or_none()
     if not todo:
         raise TodoNotFoundHTTPError
-    return {
-        "message": "Todo retrieved successfully.",
-        "todo": TodoSchema.model_validate(todo),
-    }
+
+    return templates.TemplateResponse(
+        "todo.html",
+        {
+            "request": request,
+            "todo": todo,
+        },
+    )
+    # return {
+    #     "message": "Todo retrieved successfully.",
+    #     "todo": TodoSchema.model_validate(todo),
+    # }
 
 
 @router.put("/{todo_id}")
 async def update_todo(
     db: DB,
+    request: Request,
     todo_data: TodoWitoutId = Body(openapi_examples=TODO_UPDATE_EXAMPLES),
     todo_id: int = Path(..., title="The ID of the todo to be updated"),
 ) -> dict:
@@ -89,10 +115,18 @@ async def update_todo(
     todo = result.scalar_one_or_none()
 
     await db.commit()
-    return {
-        "message": "Todo updated successfully.",
-        "data": TodoSchema.model_validate(todo),
-    }
+
+    return templates.TemplateResponse(
+        "todo.html",
+        {
+            "request": request,
+            "todo": todo,
+        },
+    )
+    # return {
+    #     "message": "Todo updated successfully.",
+    #     "data": TodoSchema.model_validate(todo),
+    # }
 
 
 @router.delete("/{todo_id}")

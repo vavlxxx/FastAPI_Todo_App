@@ -1,3 +1,4 @@
+from fastapi import Form
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -16,10 +17,18 @@ class PydanticBase(BaseModel):
 class _TodoBase(PydanticBase):
     id: int = Field(min=1)
 
+    @classmethod
+    def as_form(cls, item: str = Form(...), status: bool = Form(False)):
+        return cls(item=item, status=status)
+
 
 class TodoWitoutId(PydanticBase):
     item: str
     status: bool
+
+    @classmethod
+    def as_form(cls, item: str = Form(...), status: bool = Form(False)):
+        return cls(item=item, status=status)
 
 
 class TodoAddRequest(TodoWitoutId):
