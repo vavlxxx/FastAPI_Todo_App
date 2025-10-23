@@ -24,10 +24,6 @@ router = APIRouter()
 async def add_todo(
     db: DB,
     request: Request,
-    # todo: TodoAddRequest = Body(
-    #     description="The todo to add to the list.",
-    #     openapi_examples=TODO_EXAMPLES,
-    # ),
     todo: TodoAddRequest = Depends(TodoAddRequest.as_form),
 ) -> dict:
     query = select(Todo).filter(Todo.item == todo.item)
@@ -46,13 +42,12 @@ async def add_todo(
     todo_list = [TodoSchema.model_validate(todo) for todo in todo_list]
 
     return templates.TemplateResponse(
-        "todo.html", {"request": request, "todos": todo_list}
+        "todo.html",
+        {
+            "request": request,
+            "todos": todo_list,
+        },
     )
-
-    # return {
-    #     "message": "Todo added successfully",
-    #     "data": todo,
-    # }
 
 
 @router.get("/")
@@ -63,7 +58,11 @@ async def retrieve_todos(db: DB, request: Request) -> dict:
 
     todos_list = [TodoSchema.model_validate(todo) for todo in todos]
     return templates.TemplateResponse(
-        "todo.html", {"request": request, "todos": todos_list}
+        "todo.html",
+        {
+            "request": request,
+            "todos": todos_list,
+        },
     )
 
 
@@ -86,10 +85,6 @@ async def get_single_todo(
             "todo": todo,
         },
     )
-    # return {
-    #     "message": "Todo retrieved successfully.",
-    #     "todo": TodoSchema.model_validate(todo),
-    # }
 
 
 @router.put("/{todo_id}")
@@ -123,10 +118,6 @@ async def update_todo(
             "todo": todo,
         },
     )
-    # return {
-    #     "message": "Todo updated successfully.",
-    #     "data": TodoSchema.model_validate(todo),
-    # }
 
 
 @router.delete("/{todo_id}")
