@@ -8,9 +8,9 @@ class PydanticBase(BaseModel):
     )
 
 
-class Item(PydanticBase):
-    item: str
-    status: bool
+# class Item(PydanticBase):
+#     item: str
+#     status: bool
 
 
 class _TodoBase(PydanticBase):
@@ -18,11 +18,18 @@ class _TodoBase(PydanticBase):
 
 
 class TodoWitoutId(PydanticBase):
-    item: Item
+    item: str
+    status: bool
 
 
-class Todo(_TodoBase):
-    item: Item
+class TodoAddRequest(TodoWitoutId):
+    item: str
+    status: bool = False
+
+
+class TodoSchema(_TodoBase):
+    item: str
+    status: bool
 
 
 # class TodosItems(PydanticBase):
