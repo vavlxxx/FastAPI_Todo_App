@@ -1,31 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device- 
-width, initial-scale=1.0">
-    <title>Packt Todo Application</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/all.css" integrity="sha384-d0P83n9kaQMCwj8F4RJB66tzIwOKmrdb46+porD/OvrJ+37WqIM7UoBtwHO6Nlg" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Application</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #2c3e50;
+        }
+        
+        .navbar {
+            background: #ffffff !important;
+            border-bottom: 1px solid #e1e8ed;
+            box-shadow: none;
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            color: #2c3e50 !important;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .main-container {
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            box-shadow: none;
+            background: #ffffff;
+        }
+        
+        .form-card {
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .todo-card {
+            padding: 0;
+        }
+        
+        .card-header-custom {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e1e8ed;
+            background-color: #fafbfc;
+        }
+        
+        .list-group-item {
+            border-left: none;
+            border-right: none;
+            border-top: none;
+            border-bottom: 1px solid #e1e8ed;
+            padding: 16px 30px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .list-group-item:last-child {
+            border-bottom: none;
+        }
+        
+        .todo-detail {
+            padding: 30px;
+            border-top: 3px solid #007bff;
+        }
+        
+        .badge-status {
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
 
+        .badge {
+            padding: 0.5rem 0.5rem;
+        }
+        
+        /* Унифицированные кнопки */
+        .btn {
+            font-weight: 500;
+            border-radius: 6px;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+            min-width: 100px;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        
+        .btn-outline-secondary {
+            color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn-outline-secondary:hover {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+        
+        .btn-outline-danger {
+            color: #dc3545;
+            border-color: #dc3545;
+            min-width: 80px;
+        }
+        
+        .btn-outline-danger:hover {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: #ffffff;
+        }
+        
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 0.95rem;
+        }
+        
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+        }
+        
+        label {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        
+        .custom-control-label {
+            font-weight: 400;
+        }
+        
+        h3, h4, h5 {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .text-muted {
+            color: #6c757d !important;
+        }
+        
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #0056b3;
+            text-decoration: none;
+        }
+    </style>
 </head>
-
 <body>
-    <header>
-        <nav class="navar">
-            <div class="container-fluid">
-                <center>
-                    <h1>Packt Todo
-                        Application</h1>
-                </center>
-            </div>
-        </nav>
-    </header>
-    <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/todos/">
+                <i class="fas fa-list-ul"></i> Todo Application
+            </a>
+        </div>
+    </nav>
+    
+    <div class="container main-container">
         {% block todo_container %}{% endblock %}
     </div>
-</body>
 
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function deleteTodo(todoId) {
+            if (confirm('Are you sure you want to delete this todo?')) {
+                fetch(`/todos/${todoId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    window.location.href = '/todos/';
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+</body>
 </html>

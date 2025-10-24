@@ -7,7 +7,7 @@ from src.models import Todo
 from src.config import settings
 from src.dependencies import DB
 from src.schemas import TodoAddRequest, TodoWitoutId, TodoSchema
-from src.examples import TODO_EXAMPLES, TODO_UPDATE_EXAMPLES
+from src.examples import TODO_UPDATE_EXAMPLES
 from src.exceptions import (
     NotFoundHTTPError,
     TodoNotFoundHTTPError,
@@ -90,7 +90,6 @@ async def get_single_todo(
 @router.put("/{todo_id}")
 async def update_todo(
     db: DB,
-    request: Request,
     todo_data: TodoWitoutId = Body(openapi_examples=TODO_UPDATE_EXAMPLES),
     todo_id: int = Path(..., title="The ID of the todo to be updated"),
 ) -> dict:
@@ -111,13 +110,10 @@ async def update_todo(
 
     await db.commit()
 
-    return templates.TemplateResponse(
-        "todo.html",
-        {
-            "request": request,
-            "todo": todo,
-        },
-    )
+    return {
+        "message": "Todo updated successfully.",
+        "todo": TodoSchema.model_validate(todo).model_dump(),
+    }
 
 
 @router.delete("/{todo_id}")
