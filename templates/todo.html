@@ -168,9 +168,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Обработка DELETE запросов
         const deleteButtons = document.querySelectorAll('[data-delete-todo]');
-        
         deleteButtons.forEach(function(button) {
             button.addEventListener('click', function() {
                 const todoId = this.getAttribute('data-delete-todo');
@@ -189,7 +187,6 @@
             });
         });
         
-        // Обработка PUT запроса для обновления задачи
         const updateForm = document.getElementById('updateForm');
         if (updateForm) {
             updateForm.addEventListener('submit', function(e) {

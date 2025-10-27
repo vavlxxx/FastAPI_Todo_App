@@ -1,27 +1,36 @@
 services:
-  app:
+  fastapi:
     container_name: nefedov_fastapi_app
     build:
       context: ./
       dockerfile: ./Dockerfile
-    image: fastapi_nefedov
+    env_file:
+      - ".env.docker"
+    image: todos_app
     volumes:
       - ./db.sqlite3:/app/db.sqlite3
     ports:
       - 8000:8000
-#   db:
-#     container_name: nefedov_db
-#     image: postgres
-#     ports:
-#       - 6432:5432
-#     env_file:
-#       - ".env.postgres"
-#     volumes:
-#       - db_data:/var/lib/postgresql/data
+    depends_on:
+      - postgres
+    networks:
+      - nefedov_net
 
-# volumes:
-#   db_data:
+  postgres:
+    container_name: nefedov_postgres_db
+    image: postgres
+    networks:
+      - nefedov_net
+    ports:
+      - 6432:5432
+    env_file:
+      - ".env.postgres"
+    volumes:
+      - db_data:/var/lib/postgresql
 
-# networks:
-#   nefedov_net:
-#     driver: bridge
+volumes:
+  db_data:
+
+networks:
+  nefedov_net:
+    driver: bridge
